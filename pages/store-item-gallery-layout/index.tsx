@@ -3,15 +3,24 @@ import SampleItemInfo from "./components/sampleItemInfo/sampleItemInfo";
 import Gallery from "./components/gallery/gallery";
 import MobileNav from "./components/mobileNav/mobileNav";
 import Header from "./components/header/header";
+import { useState } from "react";
 
 const StoreItemGalleryLayout: React.FC = () => {
+  const [userIsScrolling, setUserIsScrolling] = useState(false);
+  const onScrollDown = () => setUserIsScrolling(true);
+  const onScrollUp = () => setUserIsScrolling(false);
+
   return (
     <div className={styles.page_container}>
       <div className={styles.page_header}>
         <Header />
       </div>
       <div className={styles.item_gallery}>
-        <Gallery srcArray={galleryImages} />
+        <Gallery
+          srcArray={galleryImages}
+          onScrollDown={onScrollDown}
+          onScrollUp={onScrollUp}
+        />
       </div>
       <div className={styles.item_info_container}>
         <SampleItemInfo />

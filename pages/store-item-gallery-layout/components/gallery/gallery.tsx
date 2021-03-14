@@ -8,7 +8,8 @@ type srcObj = {
 };
 
 type GalleryProps = {
-  iterateVertically?: boolean;
+  onScrollDown?: Function;
+  onScrollUp?: Function;
 } & (
   | {
       srcArray: srcObj[];
@@ -23,7 +24,8 @@ type GalleryProps = {
 const Gallery: React.FC<GalleryProps> = ({
   componentArray,
   srcArray,
-  iterateVertically,
+  onScrollDown,
+  onScrollUp,
 }) => {
   const elementArray = componentArray
     ? componentArray
@@ -35,23 +37,10 @@ const Gallery: React.FC<GalleryProps> = ({
         />
       ));
 
-  console.log(iterateVertically);
-
   const numCols = 2;
 
   let cols = [];
   for (let i = 0; i < numCols; i++) cols.push([]);
-
-  const [colRefs, setColRefs] = useState([]);
-  useEffect(() => {
-      let refArray = (new Array(numCols).fill('x').map(() => createRef()))
-      setColRefs(refArray)
-      return () => {
-          
-      }
-  }, [])
-
-
 
   let pushArrayIndex = 0;
   elementArray.forEach((element) => {
@@ -60,21 +49,34 @@ const Gallery: React.FC<GalleryProps> = ({
     if (pushArrayIndex === numCols) pushArrayIndex = 0;
   });
 
-  if(colRefs) {
-      colRefs.forEach(columnRef => {
-          if(columnRef.current) console.log(columnRef.current.clientHeight)
-      })
-  }
+  //   Fix
+  useEffect(() => {
+    getShortestColumn();
+    return () => {};
+  }, []);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} onScroll={(e) => console.log(e)}>
       {cols.map((column, index) => (
-        <div className={styles.image_column} key={index} id={`gallery-column-${index}`} ref={colRefs[index]}>
-            {column}
+        <div
+          className={styles.image_column}
+          key={index}
+          id={`gallery-column-${index}`}
+          data-height={""}
+        >
+          {column}
         </div>
       ))}
     </div>
   );
+};
+
+const getShortestColumn = () => {
+  let columnElements = Array.from(
+    document.getElementsByClassName(`${styles.image_column}`)
+  );
+  const heights = columnElements.map((element) => element.clientHeight);
+  console.log(heights);
 };
 
 export default Gallery;
