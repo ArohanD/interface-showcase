@@ -1,5 +1,5 @@
 import styles from "./gallery.module.scss";
-import { useEffect } from "react";
+import { createRef, useEffect, useState } from "react";
 
 type srcObj = {
   src: string;
@@ -42,21 +42,34 @@ const Gallery: React.FC<GalleryProps> = ({
   let cols = [];
   for (let i = 0; i < numCols; i++) cols.push([]);
 
+  const [colRefs, setColRefs] = useState([]);
+  useEffect(() => {
+      let refArray = (new Array(numCols).fill('x').map(() => createRef()))
+      setColRefs(refArray)
+      return () => {
+          
+      }
+  }, [])
 
 
 
   let pushArrayIndex = 0;
   elementArray.forEach((element) => {
-      console.log(element)
     cols[pushArrayIndex].push(element);
     pushArrayIndex++;
     if (pushArrayIndex === numCols) pushArrayIndex = 0;
   });
 
+  if(colRefs) {
+      colRefs.forEach(columnRef => {
+          if(columnRef.current) console.log(columnRef.current.clientHeight)
+      })
+  }
+
   return (
     <div className={styles.container}>
       {cols.map((column, index) => (
-        <div className={styles.image_column} key={index}>
+        <div className={styles.image_column} key={index} id={`gallery-column-${index}`} ref={colRefs[index]}>
             {column}
         </div>
       ))}
