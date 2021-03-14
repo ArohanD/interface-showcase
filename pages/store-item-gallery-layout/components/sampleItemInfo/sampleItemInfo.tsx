@@ -27,7 +27,7 @@ const SampleItemInfo: React.FC<{ compress: boolean }> = ({ compress }) => {
         <h2 className={styles.item_price}>$89</h2>
         <span className={styles.item_small_text}>Ships in 2 - 3 weeks</span>
       </div>
-      <p className="item_description">
+      <p className={styles.item_description}>
         - Intelligent pre-sets for tea, coffee & water <br />
         - Heat-insulating outer layer <br />
         - Directed spout <br />

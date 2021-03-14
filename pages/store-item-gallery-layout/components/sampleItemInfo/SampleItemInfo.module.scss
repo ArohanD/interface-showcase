@@ -45,6 +45,10 @@
     line-height: 0.1;
   }
 
+  .item_description {
+    font-size: 1.2em;
+  }
+
   .item_purchase_button {
     text-transform: uppercase;
     width: 50%;
@@ -56,10 +60,6 @@
     border: none;
 
     margin: 3%;
-  }
-
-  .item_small_text {
-    // font-size: 0.5em;
   }
 }
 
