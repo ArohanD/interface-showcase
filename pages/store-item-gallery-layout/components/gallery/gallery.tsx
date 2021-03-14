@@ -1,5 +1,9 @@
 import styles from "./gallery.module.scss";
-import { createRef, useEffect, useState } from "react";
+import {
+  createRef,
+  useEffect,
+  useState,
+} from "react";
 
 type srcObj = {
   src: string;
@@ -22,12 +26,30 @@ type GalleryProps = {
 );
 
 const Gallery: React.FC<GalleryProps> = ({
-  componentArray,
-  srcArray,
-  onScrollDown,
-  onScrollUp,
+    componentArray,
+    srcArray,
+    onScrollDown,
+    onScrollUp,
 }) => {
-  const elementArray = componentArray
+    // STATE & LIFECYCLE
+    const scrollContainer = createRef<HTMLDivElement>()
+    const [scrollPos, setScrollPos] = useState(0)
+    //   Fix
+    useEffect(() => {
+      getShortestColumn();
+    
+      return () => {};
+    }, []);
+    
+    const handleScroll = () => {
+        const currentPos = scrollContainer.current.scrollTop;
+        (currentPos > scrollPos) ? onScrollDown() : onScrollUp();
+        setScrollPos(currentPos)
+    }
+
+
+    // IMAGE LOADING
+    const elementArray = componentArray
     ? componentArray
     : srcArray.map((srcObject) => (
         <img
@@ -49,14 +71,12 @@ const Gallery: React.FC<GalleryProps> = ({
     if (pushArrayIndex === numCols) pushArrayIndex = 0;
   });
 
-  //   Fix
-  useEffect(() => {
-    getShortestColumn();
-    return () => {};
-  }, []);
 
   return (
-    <div className={styles.container} onScroll={(e) => console.log(e)}>
+    <div className={styles.container} 
+    onScroll={() => handleScroll()}
+    ref={scrollContainer}
+    >
       {cols.map((column, index) => (
         <div
           className={styles.image_column}

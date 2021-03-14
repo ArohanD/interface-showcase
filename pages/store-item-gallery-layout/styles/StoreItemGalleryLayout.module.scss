@@ -10,6 +10,10 @@
     }
 }
 
+.page_container_contracted {
+    grid-template-rows: 0.2fr minmax(0, 2.0fr) 0.4fr 0.2fr;
+}
+
 .item_info_container {
     // min-height: 35vh;
     width: 100vw;

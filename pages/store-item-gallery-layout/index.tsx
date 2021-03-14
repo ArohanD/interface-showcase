@@ -6,24 +6,22 @@ import Header from "./components/header/header";
 import { useState } from "react";
 
 const StoreItemGalleryLayout: React.FC = () => {
-  const [userIsScrolling, setUserIsScrolling] = useState(false);
-  const onScrollDown = () => setUserIsScrolling(true);
-  const onScrollUp = () => setUserIsScrolling(false);
+  const [userIsScrollingDown, setUserIsScrollingDown] = useState(false);
 
   return (
-    <div className={styles.page_container}>
+    <div className={`${styles.page_container} ${userIsScrollingDown && styles.page_container_contracted}`}>
       <div className={styles.page_header}>
         <Header />
       </div>
       <div className={styles.item_gallery}>
         <Gallery
           srcArray={galleryImages}
-          onScrollDown={onScrollDown}
-          onScrollUp={onScrollUp}
+          onScrollDown={() => setUserIsScrollingDown(true)}
+          onScrollUp={() => setUserIsScrollingDown(false)}
         />
       </div>
       <div className={styles.item_info_container}>
-        <SampleItemInfo />
+        <SampleItemInfo compress={userIsScrollingDown} />
       </div>
       <div className={styles.page_mobile_nav}>
         <MobileNav />
