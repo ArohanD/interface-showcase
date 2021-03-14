@@ -3,7 +3,7 @@
     box-sizing: border-box;
     height: 100vh;
     display: grid;
-    grid-template-rows: auto 1.5fr 1fr auto;
+    grid-template-rows: 0.2fr minmax(0, 1.5fr) 1fr 0.2fr;
 
     div {
         // border: 1px solid red;
@@ -17,8 +17,4 @@
 
     display: grid;
     place-items: center;
-}
-
-.page_header, .page_mobile_nav {
-    height: 8vh;
 }

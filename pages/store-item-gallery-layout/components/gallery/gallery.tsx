@@ -1,18 +1,67 @@
 import styles from "./gallery.module.scss";
-import React from "react";
+import { useEffect } from "react";
 
-type GalleryProps =
+type srcObj = {
+  src: string;
+  alt?: string;
+  class?: string;
+};
+
+type GalleryProps = {
+  iterateVertically?: boolean;
+} & (
   | {
-      srcArray?: string[];
+      srcArray: srcObj[];
       componentArray?: never;
     }
   | {
       componentArray: React.ReactNode[];
       srcArray?: never;
-    };
+    }
+);
 
-const Gallery: React.FC<GalleryProps> = ({ componentArray, srcArray }) => {
-  return <div>Gallery</div>;
+const Gallery: React.FC<GalleryProps> = ({
+  componentArray,
+  srcArray,
+  iterateVertically,
+}) => {
+  const elementArray = componentArray
+    ? componentArray
+    : srcArray.map((srcObject) => (
+        <img
+          src={srcObject.src}
+          alt={srcObject.alt}
+          className={srcObject.class}
+        />
+      ));
+
+  console.log(iterateVertically);
+
+  const numCols = 2;
+
+  let cols = [];
+  for (let i = 0; i < numCols; i++) cols.push([]);
+
+
+
+
+  let pushArrayIndex = 0;
+  elementArray.forEach((element) => {
+      console.log(element)
+    cols[pushArrayIndex].push(element);
+    pushArrayIndex++;
+    if (pushArrayIndex === numCols) pushArrayIndex = 0;
+  });
+
+  return (
+    <div className={styles.container}>
+      {cols.map((column, index) => (
+        <div className={styles.image_column} key={index}>
+            {column}
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default Gallery;

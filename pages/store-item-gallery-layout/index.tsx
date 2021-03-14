@@ -11,7 +11,7 @@ const StoreItemGalleryLayout: React.FC = () => {
         <Header />
       </div>
       <div className={styles.item_gallery}>
-        <Gallery  />
+        <Gallery srcArray={galleryImages} />
       </div>
       <div className={styles.item_info_container}>
         <SampleItemInfo />
@@ -24,11 +24,31 @@ const StoreItemGalleryLayout: React.FC = () => {
 };
 
 const galleryImages = [
-  "/images/kettles/andrew-donovan-valdivia-6Pd4M4L25DU-unsplash.jpg",
-  "/images/kettles/jacob-campbell-5IcRb8PlhOc-unsplash.jpg",
-  "/images/kettles/john-forson-WWzDPKot6nQ-unsplash.jpg",
-  "/images/kettles/kevin-canlas-OSzl8fLLLuE-unsplash.jpg",
-  "/images/kettles/tyler-nix-w4wqXGQU-J8-unsplash.jpg",
+  {
+    src: "/images/kettles/andrew-donovan-valdivia-6Pd4M4L25DU-unsplash.jpg",
+    alt: "kettle image",
+    class: "",
+  },
+  {
+    src: "/images/kettles/jacob-campbell-5IcRb8PlhOc-unsplash.jpg",
+    alt: "kettle image",
+    class: "",
+  },
+  {
+    src: "/images/kettles/john-forson-WWzDPKot6nQ-unsplash.jpg",
+    alt: "kettle image",
+    class: "",
+  },
+  {
+    src: "/images/kettles/kevin-canlas-OSzl8fLLLuE-unsplash.jpg",
+    alt: "kettle image",
+    class: "",
+  },
+  {
+    src: "/images/kettles/tyler-nix-w4wqXGQU-J8-unsplash.jpg",
+    alt: "kettle image",
+    class: "",
+  },
 ];
 
 export default StoreItemGalleryLayout;
