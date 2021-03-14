@@ -3,7 +3,7 @@
     box-sizing: border-box;
     height: 100vh;
     display: grid;
-    grid-template-rows: 0.2fr minmax(0, 1.5fr) 1fr 0.2fr;
+    grid-template-rows: 55px minmax(0, 1.5fr) 1fr 55px;
 
     div {
         // border: 1px solid red;
@@ -11,7 +11,7 @@
 }
 
 .page_container_contracted {
-    grid-template-rows: 0.2fr minmax(0, 2.0fr) 0.4fr 0.2fr;
+    grid-template-rows: 55px minmax(0, 2.0fr) 0.4fr 55px;
 }
 
 .item_info_container {
