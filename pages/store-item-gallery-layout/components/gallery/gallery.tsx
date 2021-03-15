@@ -1,5 +1,5 @@
 import styles from "./gallery.module.scss";
-import { createRef, ReactNode, useEffect, useState } from "react";
+import { createRef, RefObject, useEffect, useState } from "react";
 
 type srcObj = {
   src: string;
@@ -63,10 +63,6 @@ const Gallery: React.FC<GalleryProps> = ({
       if (pushArrayIndex === numCols) pushArrayIndex = 0;
     });
 
-    // const elementArrayCopy = [...elementArray];
-    // let newCols = new Array(Math.floor(elementArrayCopy.length / numCols))
-    //   .fill("x")
-    //   .map(() => elementArrayCopy.splice(0, numCols + 1));
     setCols(newCols);
   }, []);
 
@@ -77,52 +73,14 @@ const Gallery: React.FC<GalleryProps> = ({
   const colContainerRef = createRef<HTMLDivElement>();
 
   useEffect(() => {
-      // NEED TO ADD A REBALANCE DELAY
+    // NEED TO ADD A REBALANCE DELAY
     setTimeout(() => {
       if (!imagesRebalanced && refArray[0].current) {
-          setCols(rebalanceImages());
-          setImagesRebalanced(true)
+        setCols(rebalanceImages(refArray, numCols));
+        setImagesRebalanced(true);
       }
     }, 100);
   }, [cols]);
-
-  const rebalanceImages = () => {
-    const childHTMLArrays = refArray.map((ref) => ref.current.children);
-    const childNodeArrays = refArray.map((ref) => ref.current.childNodes);
-
-    const numItemsArray = childHTMLArrays.map((htmlCol) => htmlCol.length);
-
-    const maxIndex = Math.max(...numItemsArray);
-
-    const nodeCollectionWithHeight = [];
-    for (let rowIndex = 0; rowIndex < maxIndex; rowIndex++) {
-      for (let colIndex = 0; colIndex < numCols; colIndex++) {
-        if (childHTMLArrays[colIndex][rowIndex]) {
-          nodeCollectionWithHeight.push({
-            node: childNodeArrays[colIndex][rowIndex],
-            height: childHTMLArrays[colIndex][rowIndex].scrollHeight,
-          });
-        }
-      }
-    }
-
-    let newColsWithHeight = [];
-    for (let i = 0; i < numCols; i++)
-      newColsWithHeight.push({
-        heightTotal: 0,
-        nodes: [],
-      });
-
-    nodeCollectionWithHeight.forEach((node) => {
-      const pushIndex = getIndexWithLowestHeight(newColsWithHeight);
-      newColsWithHeight[pushIndex].heightTotal += node.height;
-      newColsWithHeight[pushIndex].nodes.push(node.node);
-    });
-
-    return newColsWithHeight.map((col) => col.nodes).map(col => col.map(node => (
-        <img src={node.src} alt={node.alt} className={node.class} key={node.src}/>
-    )));
-  };
 
   return (
     <div
@@ -145,7 +103,11 @@ const Gallery: React.FC<GalleryProps> = ({
 };
 
 // TYPE THIS
-const getIndexWithLowestHeight = (newColsWithHeight) => {
+type heightTrackedColumn = {
+  heightTotal: number;
+  nodes: Element[];
+};
+const getIndexWithLowestHeight = (newColsWithHeight: heightTrackedColumn[]) => {
   let minIndex = 0;
   newColsWithHeight.forEach((col, index) => {
     if (col.heightTotal < newColsWithHeight[minIndex].heightTotal) {
@@ -153,6 +115,56 @@ const getIndexWithLowestHeight = (newColsWithHeight) => {
     }
   });
   return minIndex;
+};
+
+const rebalanceImages = (
+  refArray: RefObject<HTMLDivElement>[],
+  numCols: number
+) => {
+  const childHTMLArrays = refArray.map((ref) => ref.current.children);
+  const childNodeArrays = refArray.map((ref) => ref.current.childNodes);
+
+  const numItemsArray = childHTMLArrays.map((htmlCol) => htmlCol.length);
+
+  const maxIndex = Math.max(...numItemsArray);
+
+  const nodeCollectionWithHeight = [];
+  for (let rowIndex = 0; rowIndex < maxIndex; rowIndex++) {
+    for (let colIndex = 0; colIndex < numCols; colIndex++) {
+      if (childHTMLArrays[colIndex][rowIndex]) {
+        nodeCollectionWithHeight.push({
+          node: childNodeArrays[colIndex][rowIndex],
+          height: childHTMLArrays[colIndex][rowIndex].scrollHeight,
+        });
+      }
+    }
+  }
+
+  let newColsWithHeight = [];
+  for (let i = 0; i < numCols; i++)
+    newColsWithHeight.push({
+      heightTotal: 0,
+      nodes: [],
+    });
+
+  nodeCollectionWithHeight.forEach((node) => {
+    const pushIndex = getIndexWithLowestHeight(newColsWithHeight);
+    newColsWithHeight[pushIndex].heightTotal += node.height;
+    newColsWithHeight[pushIndex].nodes.push(node.node);
+  });
+
+  return newColsWithHeight
+    .map((col) => col.nodes)
+    .map((col) =>
+      col.map((node) => (
+        <img
+          src={node.src}
+          alt={node.alt}
+          className={node.class}
+          key={node.src}
+        />
+      ))
+    );
 };
 
 export default Gallery;
