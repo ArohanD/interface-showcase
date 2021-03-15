@@ -12,6 +12,7 @@
 
 .page_container_contracted {
     grid-template-rows: 55px minmax(0, 2.0fr) 0.4fr 55px;
+    animation: resizeInfo 200ms;
 }
 
 .item_info_container {
@@ -21,4 +22,18 @@
 
     display: grid;
     place-items: center;
+}
+
+@keyframes resizeInfo {
+    from {
+        grid-template-rows: 55px minmax(0, 1.5fr) 1fr 55px;
+    }
+
+    // 50% {
+    //     grid-template-rows: 55px minmax(0, 1.75fr) 0.7fr 55px;
+    // }
+
+    to {
+        grid-template-rows: 55px minmax(0, 2.0fr) 0.4fr 55px;
+    }
 }

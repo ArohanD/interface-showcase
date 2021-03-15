@@ -9,15 +9,23 @@ const StoreItemGalleryLayout: React.FC = () => {
   const [userIsScrollingDown, setUserIsScrollingDown] = useState(false);
 
   return (
-    <div className={`${styles.page_container} ${userIsScrollingDown && styles.page_container_contracted}`}>
+    <div
+      className={`${styles.page_container} ${
+        userIsScrollingDown && styles.page_container_contracted
+      }`}
+    >
       <div className={styles.page_header}>
         <Header />
       </div>
       <div className={styles.item_gallery}>
         <Gallery
           srcArray={galleryImages}
-          onScrollDown={() => setUserIsScrollingDown(true)}
-          onScrollUp={() => setUserIsScrollingDown(false)}
+          onScrollDown={() => {
+            if (!userIsScrollingDown) setUserIsScrollingDown(true);
+          }}
+          onScrollUp={() => {
+            if (userIsScrollingDown) setUserIsScrollingDown(false);
+          }}
         />
       </div>
       <div className={styles.item_info_container}>

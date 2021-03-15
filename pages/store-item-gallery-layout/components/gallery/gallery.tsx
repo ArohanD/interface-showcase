@@ -32,10 +32,15 @@ const Gallery: React.FC<GalleryProps> = ({
   const [scrollPos, setScrollPos] = useState(0);
   const [cols, setCols] = useState([]);
   const [imagesRebalanced, setImagesRebalanced] = useState(false);
+  const [allowScrollAdjustment, setAllowScrollAdjustment] = useState(true)
 
   const handleScroll = () => {
     const currentPos = scrollContainer.current.scrollTop;
-    currentPos > scrollPos ? onScrollDown() : onScrollUp();
+    if (allowScrollAdjustment) currentPos > scrollPos ? onScrollDown() : onScrollUp();
+    setAllowScrollAdjustment(false)
+    setTimeout(() => {
+        setAllowScrollAdjustment(true)
+      }, 900)
     setScrollPos(currentPos);
   };
 
@@ -70,8 +75,6 @@ const Gallery: React.FC<GalleryProps> = ({
     .fill("x")
     .map(() => createRef<HTMLDivElement>());
 
-  const colContainerRef = createRef<HTMLDivElement>();
-
   useEffect(() => {
     // NEED TO ADD A REBALANCE DELAY
     setTimeout(() => {
@@ -79,7 +82,7 @@ const Gallery: React.FC<GalleryProps> = ({
         setCols(rebalanceImages(refArray, numCols));
         setImagesRebalanced(true);
       }
-    }, 100);
+    }, 500);
   }, [cols]);
 
   return (
