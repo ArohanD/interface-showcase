@@ -47,6 +47,7 @@ const Gallery: React.FC<GalleryProps> = ({
           src={srcObject.src}
           alt={srcObject.alt}
           className={srcObject.class}
+          key={srcObject.src}
         />
       ));
 
@@ -55,13 +56,17 @@ const Gallery: React.FC<GalleryProps> = ({
   useEffect(() => {
     let newCols = [];
     for (let i = 0; i < numCols; i++) newCols.push([]);
-
     let pushArrayIndex = 0;
     elementArray.forEach((element) => {
       newCols[pushArrayIndex].push(element);
       pushArrayIndex++;
       if (pushArrayIndex === numCols) pushArrayIndex = 0;
     });
+
+    // const elementArrayCopy = [...elementArray];
+    // let newCols = new Array(Math.floor(elementArrayCopy.length / numCols))
+    //   .fill("x")
+    //   .map(() => elementArrayCopy.splice(0, numCols + 1));
     setCols(newCols);
   }, []);
 
@@ -69,13 +74,54 @@ const Gallery: React.FC<GalleryProps> = ({
     .fill("x")
     .map(() => createRef<HTMLDivElement>());
 
+  const colContainerRef = createRef<HTMLDivElement>();
+
   useEffect(() => {
-    if(!imagesRebalanced) rebalanceImages();
+      // NEED TO ADD A REBALANCE DELAY
+    setTimeout(() => {
+      if (!imagesRebalanced && refArray[0].current) {
+          setCols(rebalanceImages());
+          setImagesRebalanced(true)
+      }
+    }, 100);
   }, [cols]);
 
   const rebalanceImages = () => {
-    console.log(refArray);
-    refArray.forEach((ref) => console.log(ref.current));
+    const childHTMLArrays = refArray.map((ref) => ref.current.children);
+    const childNodeArrays = refArray.map((ref) => ref.current.childNodes);
+
+    const numItemsArray = childHTMLArrays.map((htmlCol) => htmlCol.length);
+
+    const maxIndex = Math.max(...numItemsArray);
+
+    const nodeCollectionWithHeight = [];
+    for (let rowIndex = 0; rowIndex < maxIndex; rowIndex++) {
+      for (let colIndex = 0; colIndex < numCols; colIndex++) {
+        if (childHTMLArrays[colIndex][rowIndex]) {
+          nodeCollectionWithHeight.push({
+            node: childNodeArrays[colIndex][rowIndex],
+            height: childHTMLArrays[colIndex][rowIndex].scrollHeight,
+          });
+        }
+      }
+    }
+
+    let newColsWithHeight = [];
+    for (let i = 0; i < numCols; i++)
+      newColsWithHeight.push({
+        heightTotal: 0,
+        nodes: [],
+      });
+
+    nodeCollectionWithHeight.forEach((node) => {
+      const pushIndex = getIndexWithLowestHeight(newColsWithHeight);
+      newColsWithHeight[pushIndex].heightTotal += node.height;
+      newColsWithHeight[pushIndex].nodes.push(node.node);
+    });
+
+    return newColsWithHeight.map((col) => col.nodes).map(col => col.map(node => (
+        <img src={node.src} alt={node.alt} className={node.class} key={node.src}/>
+    )));
   };
 
   return (
@@ -98,23 +144,14 @@ const Gallery: React.FC<GalleryProps> = ({
   );
 };
 
-const getShortestColumn = () => {
-  let columnElements = Array.from(
-    document.getElementsByClassName(`${styles.image_column}`)
-  );
-  const heights = columnElements.map((element) => {
-    if (element.children.length === 0) return 0;
-    let totalHeight = 0;
-    for (element of element.children) totalHeight += element.scrollHeight;
-
-    return totalHeight;
-  });
-
+// TYPE THIS
+const getIndexWithLowestHeight = (newColsWithHeight) => {
   let minIndex = 0;
-  heights.forEach((colHeight, index) => {
-    if (heights[minIndex] > colHeight) minIndex = index;
+  newColsWithHeight.forEach((col, index) => {
+    if (col.heightTotal < newColsWithHeight[minIndex].heightTotal) {
+      minIndex = index;
+    }
   });
-  console.log(heights, minIndex);
   return minIndex;
 };
 

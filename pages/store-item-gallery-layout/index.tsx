@@ -34,7 +34,7 @@ const galleryImages = [
   {
     src: "/images/kettles/andrew-donovan-valdivia-6Pd4M4L25DU-unsplash.jpg",
     alt: "kettle image",
-    class: "",
+    class: "ble",
   },
   {
     src: "/images/kettles/jacob-campbell-5IcRb8PlhOc-unsplash.jpg",
