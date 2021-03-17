@@ -10,53 +10,67 @@ type srcObj = {
 type GalleryProps = {
   onScrollDown?: Function;
   onScrollUp?: Function;
+  breakPoint?: number;
 } & (
-  | {
+    | {
       srcArray: srcObj[];
       componentArray?: never;
     }
-  | {
+    | {
       componentArray: React.ReactNode[];
       srcArray?: never;
     }
-);
+  );
 
 const Gallery: React.FC<GalleryProps> = ({
   componentArray,
   srcArray,
   onScrollDown,
   onScrollUp,
+  breakPoint = 300
 }) => {
   // STATE & LIFECYCLE
   const scrollContainer = createRef<HTMLDivElement>();
   const [scrollPos, setScrollPos] = useState(0);
   const [cols, setCols] = useState([]);
-  const [imagesRebalanced, setImagesRebalanced] = useState(false);
-  const [allowScrollAdjustment, setAllowScrollAdjustment] = useState(true)
+  const [imagesRebalanced, setImagesRebalanced] = useState(!!componentArray);
+  const [allowScrollAdjustment, setAllowScrollAdjustment] = useState(true);
+  const [numCols, setNumCols] = useState(2);
 
   const handleScroll = () => {
     const currentPos = scrollContainer.current.scrollTop;
-    if (allowScrollAdjustment) currentPos > scrollPos ? onScrollDown() : onScrollUp();
-    setAllowScrollAdjustment(false)
+    if (allowScrollAdjustment)
+      currentPos > scrollPos ? onScrollDown() : onScrollUp();
+    setAllowScrollAdjustment(false);
     setTimeout(() => {
-        setAllowScrollAdjustment(true)
-      }, 900)
+      setAllowScrollAdjustment(true);
+    }, 900);
     setScrollPos(currentPos);
   };
 
   // IMAGE LOADING
   const elementArray = componentArray
-    ? componentArray
+    ? Array.from(componentArray)
     : srcArray.map((srcObject) => (
-        <img
-          src={srcObject.src}
-          alt={srcObject.alt}
-          className={srcObject.class}
-          key={srcObject.src}
-        />
-      ));
+      <img
+        src={srcObject.src}
+        alt={srcObject.alt}
+        className={srcObject.class}
+        key={srcObject.src}
+      />
+    ));
 
-  const numCols = 2;
+  useEffect(() => {
+    const newNumCols = Math.floor(window.innerWidth / breakPoint);
+    setNumCols(newNumCols);
+    window.addEventListener("resize", () => resizeCols(breakPoint, setNumCols));
+
+    return () => {
+      window.removeEventListener("resize", () =>
+        resizeCols(numCols, setNumCols)
+      );
+    };
+  }, []);
 
   useEffect(() => {
     let newCols = [];
@@ -69,7 +83,9 @@ const Gallery: React.FC<GalleryProps> = ({
     });
 
     setCols(newCols);
-  }, []);
+
+    return () => { };
+  }, [numCols]);
 
   const refArray = new Array(numCols)
     .fill("x")
@@ -118,6 +134,11 @@ const getIndexWithLowestHeight = (newColsWithHeight: heightTrackedColumn[]) => {
     }
   });
   return minIndex;
+};
+
+const resizeCols = (breakPoint: number, setter: Function) => {
+  if(window.innerWidth < breakPoint) return 1
+  setter(Math.floor(window.innerWidth / breakPoint));
 };
 
 const rebalanceImages = (
