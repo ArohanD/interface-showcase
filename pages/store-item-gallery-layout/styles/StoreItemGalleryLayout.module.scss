@@ -5,8 +5,8 @@
     display: grid;
     grid-template-rows: 55px minmax(0, 1.5fr) 1fr 55px;
 
-    div {
-        // border: 1px solid red;
+    @media (min-width: 700px) {
+        background-color: blue;
     }
 }
 

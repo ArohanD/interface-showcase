@@ -7,27 +7,40 @@ type srcObj = {
   class?: string;
 };
 
+type orTest = (
+  {
+    columns: number;
+    breakPoint: never;
+  } | {
+    columns: never;
+    breakPoint: number;
+  }
+)
+
 type GalleryProps = {
   onScrollDown?: Function;
   onScrollUp?: Function;
-  breakPoint?: number;
-} & (
-    | {
+} & ({
       srcArray: srcObj[];
       componentArray?: never;
-    }
-    | {
+    } | {
       componentArray: React.ReactNode[];
       srcArray?: never;
-    }
-  );
+    }) & ({
+        columns: number;
+        breakPoint?: never;
+      } | {
+        columns?: never;
+        breakPoint: number;
+      })
 
 const Gallery: React.FC<GalleryProps> = ({
   componentArray,
   srcArray,
   onScrollDown,
   onScrollUp,
-  breakPoint = 300
+  breakPoint,
+  columns
 }) => {
   // STATE & LIFECYCLE
   const scrollContainer = createRef<HTMLDivElement>();
@@ -35,10 +48,11 @@ const Gallery: React.FC<GalleryProps> = ({
   const [cols, setCols] = useState([]);
   const [imagesRebalanced, setImagesRebalanced] = useState(!!componentArray);
   const [allowScrollAdjustment, setAllowScrollAdjustment] = useState(true);
-  const [numCols, setNumCols] = useState(2);
+  const [numCols, setNumCols] = useState(columns || 2);
 
   const handleScroll = () => {
     const currentPos = scrollContainer.current.scrollTop;
+    console.log(currentPos, scrollContainer.current.scrollHeight)
     if (allowScrollAdjustment)
       currentPos > scrollPos ? onScrollDown() : onScrollUp();
     setAllowScrollAdjustment(false);
@@ -61,15 +75,17 @@ const Gallery: React.FC<GalleryProps> = ({
     ));
 
   useEffect(() => {
-    const newNumCols = Math.floor(window.innerWidth / breakPoint);
-    setNumCols(newNumCols);
-    window.addEventListener("resize", () => resizeCols(breakPoint, setNumCols));
-
-    return () => {
-      window.removeEventListener("resize", () =>
-        resizeCols(numCols, setNumCols)
-      );
-    };
+    if(breakPoint){
+      const newNumCols = Math.floor(window.innerWidth / breakPoint);
+      setNumCols(newNumCols);
+      window.addEventListener("resize", () => resizeCols(breakPoint, setNumCols));
+  
+      return () => {
+        window.removeEventListener("resize", () =>
+          resizeCols(numCols, setNumCols)
+        );
+      };
+    }
   }, []);
 
   useEffect(() => {
