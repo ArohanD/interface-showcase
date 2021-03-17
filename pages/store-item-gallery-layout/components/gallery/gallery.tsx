@@ -52,7 +52,6 @@ const Gallery: React.FC<GalleryProps> = ({
 
   const handleScroll = () => {
     const currentPos = scrollContainer.current.scrollTop;
-    console.log(currentPos, scrollContainer.current.scrollHeight)
     if (allowScrollAdjustment)
       currentPos > scrollPos ? onScrollDown() : onScrollUp();
     setAllowScrollAdjustment(false);

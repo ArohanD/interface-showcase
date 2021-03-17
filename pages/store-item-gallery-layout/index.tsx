@@ -28,11 +28,11 @@ const StoreItemGalleryLayout: React.FC = () => {
           onScrollUp={() => {
             if (userIsScrollingDown) setUserIsScrollingDown(false);
           }}
-          breakPoint={200}
-          // columns={2}
+          // breakPoint={200}
+          columns={2}
         />
       </div>
-      <div className={styles.item_info_container}>
+      <div className={styles.item_info_container} onClick={() => setUserIsScrollingDown(false)}>
         <SampleItemInfo compress={userIsScrollingDown} />
       </div>
       <div className={styles.page_mobile_nav}>
